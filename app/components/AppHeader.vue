@@ -63,7 +63,11 @@ const itemsTabs = ref<TabsItem[]>([
         to="/"
       />
     </div>
-    <div class="text-center w-full">Игры</div>
+    <NuxtLink
+      to="/game"
+      class="text-center p-1 rounded-md text-info hover:bg-info-100"
+      >Игры</NuxtLink
+    >
     <div>
       <UDropdownMenu v-if="authStore.isLogged" :items="items" size="xl">
         <UButton
