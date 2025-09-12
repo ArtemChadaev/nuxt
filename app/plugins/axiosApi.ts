@@ -26,7 +26,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Предоставляем настроенный экземпляр всему приложению
     return {
         provide: {
-            axios: api,
+            api: api,
         },
     };
 });

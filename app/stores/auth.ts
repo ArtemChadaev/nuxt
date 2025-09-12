@@ -1,6 +1,8 @@
 // stores/auth.ts
 import {defineStore} from "pinia";
 import {uuid} from "valibot";
+import {Axios, AxiosResponse} from "axios";
+
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -22,12 +24,8 @@ export const useAuthStore = defineStore("auth", {
 
             try {
                 const config = useRuntimeConfig();
-                const response = await $fetch<{ refreshToken: string; accessToken: string }>(config.public.apiBase + '/auth/refresh', {
-                    method: 'POST',
-                    body: {
-                        refreshToken: this.refreshToken,
-                    }
-                })
+                const { $auth } = useNuxtApp();
+                const response: AxiosResponse<{ refreshToken: string; accessToken: string}> = await $auth.post('refresh', event.data);
                 this.refreshToken = response.refreshToken
                 this.accessToken = response.accessToken
             } catch (error) {

@@ -17,7 +17,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Предоставляем настроенный экземпляр всему приложению
     return {
         provide: {
-            axios: auth,
+            auth: auth,
         },
     };
 });
