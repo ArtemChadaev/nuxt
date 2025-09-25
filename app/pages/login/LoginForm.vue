@@ -3,8 +3,8 @@ import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
 
 const schema = z.object({
-  email: z.string().email("Invalid email"),
-  password: z.string().min(8, "Must be at least 8 characters"),
+  email: z.string().email("Некорректный email"),
+  password: z.string().min(8, "Минимум 8 символов").max(32, "Максимум 32 символа"),
 });
 
 type Schema = z.output<typeof schema>;
@@ -15,33 +15,9 @@ const state = reactive<Partial<Schema>>({
 });
 
 const toast = useToast();
-const authStore = useAuthStore();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  try {
-    const response = await $fetch<{
-      token: string;
-      user: { name: string; id: number };
-    }>("/api/auth/login", {
-      method: "POST",
-      body: event.data,
-    });
-
-    // Сохраняем токен и информацию о пользователе в хранилище
-    authStore.login(response.token, response.user.name, response.user.id);
-
-    toast.add({
-      title: "Успех",
-      description: "Вы успешно вошли в систему",
-      color: "success",
-    });
-  } catch (error: any) {
-    toast.add({
-      title: "Ошибка",
-      description: error.data?.message || "Ошибка авторизации",
-      color: "error",
-    });
-  }
+  // toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
 }
 </script>
 

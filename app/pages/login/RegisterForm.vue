@@ -1,27 +1,17 @@
 <script setup lang="ts">
-import * as v from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import * as z from "zod";
 
-const authStore = useAuthStore();
-
-const schema = v.object({
-  email: v.pipe(v.string(), v.trim(), v.email("Invalid email")),
-  password: v.pipe(
-    v.string(),
-    v.trim(),
-    v.minLength(8, "Минимум 8 символов"),
-    v.maxLength(32, "До 32"),
-  ),
-  passwordConfirm: v.pipe(
-    v.string(),
-    v.trim(),
-    v.check((input) => {
-      return input === state.password;
-    }, "Пароли не совпадают"),
-  ),
+const schema = z.object({
+  email: z.string().email("Некорректный email"),
+  password: z.string().min(8, "Минимум 8 символов").max(32, "Максимум 32 символа"),
+  passwordConfirm: z.string()
+}).refine(data => data.password === data.passwordConfirm, {
+  message: "пароли не совпадают",
+  path: ["passwordConfirm"],
 });
 
-type Schema = v.InferOutput<typeof schema>;
+type Schema = z.output<typeof schema>;
 
 const state = reactive({
   email: "",
@@ -33,23 +23,21 @@ const toast = useToast();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
+    console.log(event.data)
     const response = await $fetch<{
       token: string;
-      user: { name: string; id: number };
-    }>("/api/auth/register", {
+      user: { name: string; id: number }
+    }>("localhost:8080/auth/sign-up", {
       method: "POST",
       body: event.data,
-    });
-
-    // Сохраняем токен и информацию о пользователе в хранилище
-    authStore.login(response.token, response.user.name, response.user.id);
+    })
 
     toast.add({
       title: "Успех",
       description: "Вы успешно вошли в систему",
       color: "success",
     });
-    await navigateTo(`/profile/${response.user.id}`);
+    await navigateTo(`/profile/${response.user.id}`)
   } catch (error: any) {
     toast.add({
       title: "Ошибка",
