@@ -3,22 +3,22 @@
 const slides = [
   {
     id: 1,
-    title: "Привет, это пробный проект",
-    description: "Начало пути",
+    title: 'Привет, это пробный проект',
+    description: 'Начало пути',
   },
   {
     id: 2,
-    title: "Создан чтобы был",
-    description: "Не люблю писать",
+    title: 'Создан чтобы был',
+    description: 'Не люблю писать',
   },
   {
     id: 3,
-    title: "Вот хоть котиков нате",
-    description: "Завершение.",
+    title: 'Вот хоть котиков нате',
+    description: 'Завершение.',
     image:
-      "https://st4.depositphotos.com/38981760/39647/v/450/depositphotos_396475506-stock-illustration-cat-illustration-set-outline-silhouette.jpg",
+      'https://st4.depositphotos.com/38981760/39647/v/450/depositphotos_396475506-stock-illustration-cat-illustration-set-outline-silhouette.jpg',
   },
-];
+]
 </script>
 
 <template>

@@ -1,49 +1,66 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from "@nuxt/ui";
-import * as z from "zod";
+import type { FormSubmitEvent } from '@nuxt/ui'
+import * as z from 'zod'
 
-const schema = z.object({
-  email: z.string().email("Некорректный email"),
-  password: z.string().min(8, "Минимум 8 символов").max(32, "Максимум 32 символа"),
-  passwordConfirm: z.string()
-}).refine(data => data.password === data.passwordConfirm, {
-  message: "пароли не совпадают",
-  path: ["passwordConfirm"],
-});
+const tokenStore = useTokenStore()
+const emit = defineEmits(['complete'])
+const toast = useToast()
 
-type Schema = z.output<typeof schema>;
+const schema = z
+  .object({
+    email: z.string().email('Некорректный email'),
+    password: z
+      .string()
+      .min(8, 'Минимум 8 символов')
+      .max(32, 'Максимум 32 символа'),
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: 'пароли не совпадают',
+    path: ['passwordConfirm'],
+  })
+
+type Schema = z.output<typeof schema>
 
 const state = reactive({
-  email: "",
-  password: "",
-  passwordConfirm: "",
-});
-
-const toast = useToast();
+  email: '',
+  password: '',
+  passwordConfirm: '',
+})
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
-    console.log(event.data)
     const response = await $fetch<{
-      token: string;
-      user: { name: string; id: number }
-    }>("localhost:8080/auth/sign-up", {
-      method: "POST",
+      refreshToken: string
+      accessToken: string
+    }>('/auth/sign-up', {
+      method: 'POST',
       body: event.data,
     })
+    tokenStore.setTokens(response.refreshToken, response.accessToken)
+    toast.add({
+      title: 'Успех',
+      description: 'Вы успешно вошли в систему',
+      color: 'success',
+    })
 
-    toast.add({
-      title: "Успех",
-      description: "Вы успешно вошли в систему",
-      color: "success",
-    });
-    await navigateTo(`/profile/${response.user.id}`)
+
+    emit('complete')
   } catch (error: any) {
+    console.log(error)
+    if (error.response && error.response.status === 409 && error.data.error === "email_exist") {
+      toast.add({
+        title: 'Ошибка',
+        description: 'email уже используется',
+        color: 'error',
+      })
+      return
+    }
     toast.add({
-      title: "Ошибка",
-      description: error.data?.message || "Ошибка авторизации",
-      color: "error",
-    });
+      title: 'Ошибка',
+      description: error.data?.error || 'Ошибка авторизации',
+      color: 'error',
+    })
   }
 }
 </script>

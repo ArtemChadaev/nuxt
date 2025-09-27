@@ -1,23 +1,54 @@
 <script setup lang="ts">
-import * as z from "zod";
-import type { FormSubmitEvent } from "@nuxt/ui";
+import * as z from 'zod'
+import type { FormSubmitEvent } from '@nuxt/ui'
+
+const tokenStore = useTokenStore()
+const emit = defineEmits(['complete'])
 
 const schema = z.object({
-  email: z.string().email("Некорректный email"),
-  password: z.string().min(8, "Минимум 8 символов").max(32, "Максимум 32 символа"),
-});
+  email: z.string().email('Некорректный email'),
+  password: z
+    .string()
+    .min(8, 'Минимум 8 символов')
+    .max(32, 'Максимум 32 символа'),
+})
 
-type Schema = z.output<typeof schema>;
+type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
   email: undefined,
   password: undefined,
-});
+})
 
-const toast = useToast();
+const toast = useToast()
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
+  try{
+    const response = await $fetch<{
+      refreshToken: string
+      accessToken: string
+    }>('/auth/sign-in', {
+      method: 'POST',
+      body: event.data,
+    })
+
+    tokenStore.setTokens(response.refreshToken, response.accessToken)
+    toast.add({
+      title: 'Успех',
+      description: 'Вы успешно вошли в систему',
+      color: 'success',
+    })
+
+
+    emit('complete')
+  } catch (error: any) {
+    console.error(error)
+    toast.add({
+      title: 'Ошибка',
+      description: error.data?.error || 'Ошибка авторизации',
+      color: 'error',
+    })
+  }
 }
 </script>
 

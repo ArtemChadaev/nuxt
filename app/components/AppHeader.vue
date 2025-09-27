@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from "@nuxt/ui";
-import { useUserStore } from "~/stores/user";
-import { storeToRefs } from "pinia";
-import { readonly } from "vue";
+import type { DropdownMenuItem } from '@nuxt/ui'
+import { useUserStore } from '~/stores/user'
+import { storeToRefs } from 'pinia'
+import { readonly } from 'vue'
 
-const userStore = useUserStore();
-const {id, name} = readonly(storeToRefs(userStore));
+const userStore = useTokenStore()
+const { id, name } = readonly(userStore)
 const items = computed(() => {
   const dropdownItems: DropdownMenuItem = [
     {
-      label: "Профиль",
-      icon: "lucide-user-pen",
+      label: 'Профиль',
+      icon: 'i-lucide-user-pen',
       to: `/profile/${id}`,
     },
     {
-      label: "Подписка",
-      icon: "lucide-user-star",
+      label: 'Подписка',
+      icon: 'i-lucide-user-star',
       to: `/profile/${id}/star`,
     },
     {
-      label: "Настройки",
-      icon: "lucide-user-cog",
+      label: 'Настройки',
+      icon: 'i-lucide-user-cog',
       to: `/profile/${id}/settings`,
     },
     {
-      label: "Выход",
-      icon: "ic-baseline-exit-to-app",
-      color: "error",
+      label: 'Выход',
+      icon: 'ic-baseline-exit-to-app',
+      color: 'error',
       onClick: () => {
-        userStore.logout();
+        userStore.logout()
       },
     },
-  ];
-  return dropdownItems;
-});
+  ]
+  return dropdownItems
+})
 </script>
 
 <template>
@@ -43,34 +43,40 @@ const items = computed(() => {
     <div>
       <UButton
         label="Home"
-        icon="lucide-home"
+        icon="lucide:home"
         color="info"
         variant="ghost"
         size="xl"
         to="/"
       />
     </div>
-    <NuxtLink
-      to="/game"
-      class="text-center p-1 rounded-md text-info hover:bg-info-100"
-      >Игры</NuxtLink
-    >
+    <UButton
+        label="Игры"
+        color="info"
+        variant="ghost"
+        size="xl"
+        to="/game"
+        class="text-center"
+      />
     <div>
       <UDropdownMenu v-if="userStore.isLogged" :items="items" size="xl">
         <UButton
           :label="!!name ? name : 'Профиль'"
-          trailing-icon="lucide-user"
+          trailing-icon="i-lucide-user"
           color="info"
           variant="ghost"
           size="xl"
         />
       </UDropdownMenu>
       <div v-else>
-        <NuxtLink to="/login">
-          Зайти
-        </NuxtLink>
-
-
+        <UButton
+            label="Войти или Зарегистрироваться"
+            icon="i-clock"
+            color="info"
+            variant="ghost"
+            size="xl"
+            to="/login"
+        />
       </div>
     </div>
   </div>
