@@ -1,46 +1,45 @@
 <script setup lang="ts">
-const userStore = useUserStore()
 import { useClipboard } from '@vueuse/core'
+const userStore = useUserStore()
 
 const userid = userStore.id?.toString() ?? ''
 const {copy} = useClipboard({source: userid})
 
-const toast = useToast()
-
-
-
 const state = {
   name: undefined,
 }
-
-const onSubmit = async () => {
-  try {
-    const response = await $fetch<{
-      refreshToken: string
-      accessToken: string
-    }>('/auth/sign-in', {
-      method: 'POST',
-      body: event.data,
-    })
-
-    tokenStore.setTokens(response.refreshToken, response.accessToken)
-
-    toast.add({
-      title: 'Успех',
-      description: 'Вы успешно вошли в систему',
-      color: 'success',
-    })
-
-    emit('complete')
-  } catch (error: any) {
-    console.error(error)
-    toast.add({
-      title: 'Ошибка',
-      description: error.data?.error || 'Ошибка авторизации',
-      color: 'error',
-    })
-  }
-}
+//TODO: Разобраться и вспомнить что я намудрил
+// const onSubmit = async () => {
+//   try {
+//     const response = await $fetch<{
+//       refreshToken: string
+//       accessToken: string
+//     }>('/auth/sign-in', {
+//       method: 'POST',
+//       body: event.data,
+//     })
+//
+//     tokenStore.setTokens(response.refreshToken, response.accessToken)
+//
+//     toast.add({
+//       title: 'Успех',
+//       description: 'Вы успешно вошли в систему',
+//       color: 'success',
+//     })
+//
+//     emit('complete')
+//   } catch (error: unknown) {
+//     console.error(error)
+//     if (error instanceof FetchError) {
+//       toast.add({
+//         title: 'Ошибка',
+//         description: error.data?.error || 'Ошибка авторизации',
+//         color: 'error',
+//       })
+//     }
+//
+//   }
+// }
 </script>
 
 <template>

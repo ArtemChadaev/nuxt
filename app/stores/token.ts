@@ -1,3 +1,4 @@
+import { FetchError } from 'ofetch'
 export const useTokenStore = defineStore(
   'token',
   () => {
@@ -36,22 +37,23 @@ export const useTokenStore = defineStore(
         })
 
         setTokens(response.refreshToken, response.accessToken)
-      } catch (error: any) {
-        if (
-          error.response &&
-          error.response.status === 400 &&
-          error.data.error === 'invalid_token'
-        ) {
-          logout()
-          await navigateTo({
-            path: '/login',
-            query: {
-              previous: route.fullPath,
-              error: 'invalid_token',
-              code: '400',
-            },
-          })
-          return
+      } catch (error: unknown) {
+        if (error instanceof FetchError) {
+          if (
+            error.response &&
+            error.response.status === 400 &&
+            error.data.error === 'invalid_token'
+          ) {
+            logout()
+            await navigateTo({
+              path: '/login',
+              query: {
+                previous: route.fullPath,
+                error: 'invalid_token',
+                code: '400',
+              },
+            })
+          }
         }
       }
     }

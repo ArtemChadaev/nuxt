@@ -1,5 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// TODO: Сделать страницу подписки
+</script>
 
-<template></template>
+<template>
+  <div>
+    Подписка
+  </div>
+</template>
 
 <style scoped></style>

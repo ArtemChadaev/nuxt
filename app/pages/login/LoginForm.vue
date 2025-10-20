@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { FetchError } from 'ofetch'
 
 const tokenStore = useTokenStore()
 
@@ -42,13 +43,15 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     })
 
     emit('complete')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error)
-    toast.add({
-      title: 'Ошибка',
-      description: error.data?.error || 'Ошибка авторизации',
-      color: 'error',
-    })
+    if (error instanceof FetchError) {
+      toast.add({
+        title: 'Ошибка',
+        description: error.data?.error || 'Ошибка авторизации',
+        color: 'error',
+      })
+    }
   }
 }
 </script>

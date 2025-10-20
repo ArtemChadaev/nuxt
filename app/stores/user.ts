@@ -1,3 +1,4 @@
+import { FetchError } from 'ofetch'
 export const useUserStore = defineStore(
   'user',
   () => {
@@ -34,10 +35,10 @@ export const useUserStore = defineStore(
         coin.value = response.coin
         date.value = new Date(response.dateOfRegistration)
         paidSubscription.value = response.paidSubscription
-        if(!!response.dateOfPaidSubscription)
+        if(response.dateOfPaidSubscription)
           dateSubstring.value = new Date(response.dateOfPaidSubscription)
-      } catch (error: any) {
-         logout()
+      } catch (error: unknown) {
+         if(error instanceof FetchError) logout()
       }
     }
     // const setPaidSubscription = (Paid: boolean, Date: Date) => {
