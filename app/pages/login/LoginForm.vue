@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { FetchError } from 'ofetch'
 
 const tokenStore = useTokenStore()
+
 const emit = defineEmits(['complete'])
 
 const schema = z.object({
@@ -22,8 +24,8 @@ const state = reactive<Partial<Schema>>({
 
 const toast = useToast()
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  try{
+const onSubmit = async (event: FormSubmitEvent<Schema>) => {
+  try {
     const response = await $fetch<{
       refreshToken: string
       accessToken: string
@@ -33,21 +35,23 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     })
 
     tokenStore.setTokens(response.refreshToken, response.accessToken)
+
     toast.add({
       title: 'Успех',
       description: 'Вы успешно вошли в систему',
       color: 'success',
     })
 
-
     emit('complete')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error)
-    toast.add({
-      title: 'Ошибка',
-      description: error.data?.error || 'Ошибка авторизации',
-      color: 'error',
-    })
+    if (error instanceof FetchError) {
+      toast.add({
+        title: 'Ошибка',
+        description: error.data?.error || 'Ошибка авторизации',
+        color: 'error',
+      })
+    }
   }
 }
 </script>

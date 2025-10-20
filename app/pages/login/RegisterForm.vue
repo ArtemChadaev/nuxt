@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
+import { FetchError } from 'ofetch'
 
 const tokenStore = useTokenStore()
 const emit = defineEmits(['complete'])
@@ -44,23 +45,28 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       color: 'success',
     })
 
-
     emit('complete')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error)
-    if (error.response && error.response.status === 409 && error.data.error === "email_exist") {
+    if (error instanceof FetchError) {
+      if (
+        error.response &&
+        error.response.status === 409 &&
+        error.data.error === 'email_exist'
+      ) {
+        toast.add({
+          title: 'Ошибка',
+          description: 'email уже используется',
+          color: 'error',
+        })
+        return
+      }
       toast.add({
         title: 'Ошибка',
-        description: 'email уже используется',
+        description: error.data?.error || 'Ошибка авторизации',
         color: 'error',
       })
-      return
     }
-    toast.add({
-      title: 'Ошибка',
-      description: error.data?.error || 'Ошибка авторизации',
-      color: 'error',
-    })
   }
 }
 </script>
