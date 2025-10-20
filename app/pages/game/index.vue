@@ -1,4 +1,4 @@
-<script lang="ts" >
+<script setup lang="ts" >
 //TODO: Сделать страницу игры
 </script>
 <template>
