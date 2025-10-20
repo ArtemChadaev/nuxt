@@ -4,14 +4,16 @@ import RegisterForm from '~/pages/login/RegisterForm.vue'
 import LoginForm from '~/pages/login/LoginForm.vue'
 
 const route = useRoute()
-
+const userStore = useUserStore()
 const goBack = () => {
+
+  userStore.getMySettings()
+
   const page =
     typeof route.query.previous === 'string' ? route.query.previous : '/'
 
   navigateTo(page)
 }
-// TODO: Сделать блок при перенаправлении с кода 400 invalid-token и других
 const itemsTabs = ref<TabsItem[]>([
   {
     label: 'login',

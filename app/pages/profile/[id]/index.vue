@@ -1,5 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+//TODO: сделать страницу пользователя
+</script>
 
-<template></template>
+<template>
+  <div>
+    Страница пользователя
+  </div>
+</template>
 
 <style scoped></style>
