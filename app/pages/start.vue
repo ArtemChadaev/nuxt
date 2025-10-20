@@ -19,9 +19,19 @@ const slides = [
       'https://st4.depositphotos.com/38981760/39647/v/450/depositphotos_396475506-stock-illustration-cat-illustration-set-outline-silhouette.jpg',
   },
 ]
+
+
+const userStore = useUserStore()
+
 </script>
 
 <template>
+
+  <div>
+    <UButton onClick="getA" />
+  </div>
+
+
   <div>
     <UCarousel
       orientation="vertical"

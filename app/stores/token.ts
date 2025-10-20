@@ -18,34 +18,54 @@ export const useTokenStore = defineStore(
     }
 
     const isTokenExpired = computed(() => {
-        if (!expiresAt.value) return true
-        return Date.now() > expiresAt.value
+      if (!expiresAt.value) return true
+      return Date.now() > expiresAt.value
     })
 
     const updateToken = async () => {
       const route = useRoute()
       try {
-          const response = await $fetch<{
-              refreshToken: string
-              accessToken: string
-          }>('/auth/refresh', {
-              method: 'POST',
-              body: { refreshToken: refreshToken.value, accessToken: accessToken.value },
-          })
+        const response = await $fetch<{
+          refreshToken: string
+          accessToken: string
+        }>('/auth/refresh', {
+          method: 'POST',
+          body: {
+            refreshToken: refreshToken.value,
+          },
+        })
+
+        setTokens(response.refreshToken, response.accessToken)
       } catch (error: any) {
-          if(error.response && error.response.status === 400 && error.data.error === "invalid_token") {
-              refreshToken.value = null
-              accessToken.value = null
-              expiresAt.value = null
-              await navigateTo({path: "/login", query: {previous: route.fullPath, error: "invalid_token", code: "400"}})
-              return
-          }
+        if (
+          error.response &&
+          error.response.status === 400 &&
+          error.data.error === 'invalid_token'
+        ) {
+          logout()
+          await navigateTo({
+            path: '/login',
+            query: {
+              previous: route.fullPath,
+              error: 'invalid_token',
+              code: '400',
+            },
+          })
+          return
+        }
       }
     }
 
-    const isLogged = computed(() => {!!refreshToken.value})
-    return { refreshToken, accessToken, setTokens, logout, isTokenExpired, isLogged}
+    return {
+      refreshToken,
+      accessToken,
+      setTokens,
+      logout,
+      isTokenExpired,
+      updateToken
+    }
   },
+
   {
     persist: true,
   },

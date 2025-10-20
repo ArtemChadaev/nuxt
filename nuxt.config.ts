@@ -22,7 +22,8 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/api/**': { proxy: `${apiBaseUrl}/api/**` },
+    '/api/_nuxt_icon/**': {}, // Для работы иконок
+    '/api/settings/**': { proxy: `${apiBaseUrl}/api/settings/**` },
     '/auth/**': { proxy: `${apiBaseUrl}/auth/**` },
   },
 })

@@ -44,11 +44,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       color: 'success',
     })
 
-
     emit('complete')
   } catch (error: any) {
     console.log(error)
-    if (error.response && error.response.status === 409 && error.data.error === "email_exist") {
+    if (
+      error.response &&
+      error.response.status === 409 &&
+      error.data.error === 'email_exist'
+    ) {
       toast.add({
         title: 'Ошибка',
         description: 'email уже используется',
